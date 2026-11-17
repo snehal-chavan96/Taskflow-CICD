@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow - Task Manager</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+
+        <header>
+            <div>
+                <h1>TaskFlow</h1>
+                <p>Organize your work. Achieve your goals.</p>
+            </div>
+            <span class="tag">Task Manager</span>
+        </header>
+
+        <section class="stats">
+            <div class="stat-card">
+                <h3>{{ tasks|length }}</h3>
+                <p>Total Tasks</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>{{ tasks|selectattr('completed')|list|length }}</h3>
+                <p>Completed</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>{{ tasks|rejectattr('completed')|list|length }}</h3>
+                <p>Pending</p>
+            </div>
+        </section>
+
+        <section class="add-section">
+            <h2>Add a New Task</h2>
+
+            <form action="{{ url_for('add_task') }}" method="POST">
+                <input type="text"
+                       name="title"
+                       placeholder="Enter your task..."
+                       required>
+                <button type="submit">+ Add Task</button>
+            </form>
+        </section>
+
+        <section class="task-section">
+            <h2>My Tasks</h2>
+
+            {% if tasks %}
+                {% for task in tasks %}
+                    <div class="task-card">
+
+                        <div class="task-info">
+                            <span class="task-title
+                                {% if task.completed %}completed{% endif %}">
+                                {{ task.title }}
+                            </span>
+
+                            <span class="status
+                                {% if task.completed %}done{% else %}pending{% endif %}">
+                                {{ "Completed" if task.completed else "Pending" }}
+                            </span>
+                        </div>
+
+                        <div class="actions">
+                            <a class="complete-btn"
+                               href="{{ url_for('complete_task', task_id=task.id) }}">
+                                {{ "Undo" if task.completed else "Complete" }}
+                            </a>
+
+                            <a class="delete-btn"
+                               href="{{ url_for('delete_task', task_id=task.id) }}">
+                                Delete
+                            </a>
+                        </div>
+
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="empty">No tasks available. Add your first task!</p>
+            {% endif %}
+
+        </section>
+
+        <footer>
+            <p>TaskFlow | Built with Python</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
